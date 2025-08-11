@@ -2,6 +2,7 @@ import express from "express";
 import bodyParser from "body-parser";
 import pg from "pg";
 import dotenv from "dotenv";
+import fetch from "node-fetch";
 
 if (process.env.NODE_ENV !== "production") {
   dotenv.config();
@@ -71,3 +72,15 @@ app.post("/delete", async (req, res) => {
 app.listen(port, () => {
   console.log(`🚀 Server running on port ${port}`);
 });
+
+
+
+
+// Ping the app every 14 minutes to keep it awake
+if (process.env.RENDER === "true") {
+  setInterval(() => {
+    fetch(process.env.APP_URL)
+      .then(res => console.log("Pinged self:", res.status))
+      .catch(err => console.error("Ping error:", err));
+  }, 14 * 60 * 1000);
+}
